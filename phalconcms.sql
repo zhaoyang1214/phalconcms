@@ -468,7 +468,7 @@ CREATE TABLE `ph_category` (
 	KEY `pid` (`pid`),
 	KEY `category_model_id` (`category_model_id`),
 	KEY `name` (`name`),
-	KEY `urlname` (`urlname`, `is_show`),
+	KEY `urlname2` (`urlname`, `is_show`),
 	KEY `sequence` (`sequence`),
 	KEY `language_id` (`language_id`),
 	KEY `expand_id` (`expand_id`)
