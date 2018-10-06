@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* CSS Document */
+/*登录*/
+.container{background:url(../images/background.jpg) top center no-repeat;width:100%; height:100%; overflow:auto}
+.login_name{padding-top:10%; padding-bottom:55px; text-align:center}
+.login_name h3{font-size:36px; color:#fff; font-weight:bold}
+.login{background:#fff; margin:0 auto; width:400px; height:340px; margin-bottom:400px;overflow:hidden; border-radius:5px}
+.login_box{width:350px; margin:0 auto}
+.login strong{font-size:24px; color:#999;text-align:center; padding-top:35px; display:block}
+.login_list li{width:100%; height:55px; line-height:55px; margin-top:20px; }
+.login_list input{border:1px solid #cccacb; width:100%; height:55px; line-height:55px;}
+.login_list .login_btn{background:#4995e1; margin-top:5px; color:#fff; font-size:16px; border:0; cursor:pointer}
+.login_list{padding-top:10px}
+.login_list .username{background:url(../images/name.png) 15px center no-repeat; padding-left:60px; width:285px}
+.login_list input{outline:none;color:#999}
+.login_list .passwd{background:url(../images/passwd.png) 15px center no-repeat; padding-left:60px; width:285px}
+.login_group .checkbox{margin-top:-2px; vertical-align:middle}
+.login_a{margin:25px auto;line-height:30px; height:30px; color:#999}
+.login_group{width:100px;}
+
+.login_a .re_login{color:#999;}
