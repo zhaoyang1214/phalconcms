@@ -3,6 +3,7 @@ namespace App\Home\Models;
 
 use Phalcon\Mvc\Model as MvcModel;
 use Common\Common;
+use Phalcon\Text;
 
 class Model extends MvcModel {
     
@@ -15,8 +16,8 @@ class Model extends MvcModel {
         return $this;
     }
     
-    public function setModel(string $modelName) {
-        $class = 'App\\Home\\Models\\' . ucfirst($modelName);
+    public function getModel(string $modelName) {
+        $class = 'App\\Home\\Models\\' . Text::camelize($modelName);
         if(class_exists($class)) {
             return new $class();
         }
