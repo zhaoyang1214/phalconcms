@@ -4,7 +4,7 @@ namespace App\Admin\Controllers;
 use App\Admin\Models\Admin;
 use App\Admin\Models\Translate;
 use App\Admin\Models\Category;
-use App\Admin\Models\Categoryjump;
+use App\Admin\Models\CategoryJump;
 
 class CategoryjumpController extends CommonController {
 
@@ -24,7 +24,7 @@ class CategoryjumpController extends CommonController {
                 return $this->sendJson($category->getMessages()[0]->getMessage(), 10001);
             }
             $data['category_id'] = $category->id;
-            $categoryJump = new Categoryjump();
+            $categoryJump = new CategoryJump();
             $addRes = $categoryJump->add($data);
             if($addRes === false) {
                 $this->db->rollback();
@@ -58,7 +58,7 @@ class CategoryjumpController extends CommonController {
         if ($info === false) {
             $this->error($category->getMessages()[0]->getMessage(), false);
         }
-        $categoryJump = (new Categoryjump())->findFirst('category_id=' . $info->id);
+        $categoryJump = (new CategoryJump())->findFirst('category_id=' . $info->id);
         $admin = new Admin();
         $translate = new Translate();
         $category = new Category();
@@ -92,7 +92,7 @@ class CategoryjumpController extends CommonController {
             return $this->sendJson($category->getMessages()[0]->getMessage(), 10001);
         }
         $url = $this->post('url');
-        $categoryJump = new Categoryjump();
+        $categoryJump = new CategoryJump();
         $editRes = $categoryJump->updateByCategoryId($category->id, $url);
         if ($editRes === false) {
             $this->db->rollback();
@@ -117,7 +117,7 @@ class CategoryjumpController extends CommonController {
         if($delRes === false) {
             return $this->sendJson($category->getMessages()[0]->getMessage(), 10001);
         }
-        $categoryJump = Categoryjump::find('category_id=' . $id);
+        $categoryJump = CategoryJump::find('category_id=' . $id);
         $delRes = $categoryJump->delete();
         if($delRes === false) {
             $this->db->rollback();
