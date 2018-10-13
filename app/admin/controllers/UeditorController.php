@@ -429,6 +429,10 @@ class UeditorController extends CommonController {
         $destination = $path . '/' . $fileName;
         $destination = strstr(PHP_OS, 'WIN') ? (function_exists('mb_convert_encoding') ? mb_convert_encoding($destination, 'GBK', 'UTF-8') : iconv('UTF-8', 'GBK', $destination)) : $destination;
         if (file_put_contents($destination, $img)) {
+            if(!function_exists('finfo_open')) {
+                $state = '请开启php_fileinfo.dll扩展';
+                goto error_response;
+            }
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime = finfo_file($finfo, $destination);
             (new Upload())->create([ 
