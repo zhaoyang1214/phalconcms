@@ -15,6 +15,7 @@ class FormData extends BaseModel {
     public function setTableName($_tableName = null) {
         static::$_tableName = 'form_data_' . $_tableName;
         $this->setSource(static::$_tablePrefix . static::$_tableName);
+        return $this;
     }
     
     /**

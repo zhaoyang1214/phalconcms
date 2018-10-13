@@ -17,7 +17,7 @@ class Model extends MvcModel {
     }
     
     public function getModel(string $modelName) {
-        $class = 'App\\Home\\Models\\' . Text::camelize($modelName);
+        $class = 'App\\Home\\Models\\' . ucfirst($modelName);
         if(class_exists($class)) {
             return new $class();
         }
