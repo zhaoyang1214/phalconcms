@@ -40,7 +40,7 @@ class FormController extends CommonController {
         $where = htmlspecialchars_decode($form->where);
         $count = $formData->getCount($where);
         $listRows = intval($form->page) <= 0 ? 10 : $form->page;
-        $paginator = new Paginator($count, $listRows=1);
+        $paginator = new Paginator($count, $listRows);
         $list = $formData->getAll([
             'conditions' => $where,
             'order' => $form->sort,
@@ -58,10 +58,7 @@ class FormController extends CommonController {
             ],
         ];
         $this->view->common = $this->media($form->name);
-        if($form->alone_tpl == 1) {
-            
-        }
-        $renderView = $form->alone_tpl == 1 ? 'form/index' : $form->tpl;
+        $renderView = $form->alone_tpl == 1 ? $form->tpl : 'form/index';
         $this->view->pick($renderView);
     }
     
