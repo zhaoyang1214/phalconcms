@@ -65,7 +65,6 @@ class TranslateController extends CommonController {
         }
         $language = Language::findFirst($translate->translated_language_id);
         $admin = new Admin();
-        $translate = new Translate();
         $actionPower = $admin->checkPower('Translate', 'edit');
         $actionName = $actionPower ? '修改' : '查看';
         $this->view->setTemplateBefore('common');
