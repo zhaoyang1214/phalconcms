@@ -50,19 +50,23 @@ class Model extends MvcModel {
      * @date 2018年9月30日 上午10:41:48 
      */
     public function getOne($parameters = null, $languageId = null) {
+        $where = [];
+        if(is_numeric($parameters)) {
+            $where[] = 'id=' . $parameters;
+            $parameters = [];
+        } else if(is_string($parameters)) {
+            $where[] = $parameters;
+            $parameters = [];
+        } else if(is_array($parameters)) {
+            $where[] = $parameters['conditions'] ?? '';
+        } else {
+            $parameters = [];
+        }
         if($languageId !== false) {
             $languageId = ($languageId && is_int($languageId)) ? $languageId : LANGUAGE_ID;
-            if(is_null($parameters)) {
-                $parameters['conditions'] = 'language_id=' . $languageId;
-            } else if(is_numeric($parameters)) {
-                $parameters['conditions'] = 'id=' . $parameters . ' AND language_id=' . $languageId;
-            } else if(is_string($parameters)) {
-                $parameters['conditions'] .= ' AND language_id=' . $languageId;
-            } else if(is_array($parameters)) {
-                $parameters['conditions'] = $parameters['conditions'] ?? '';
-                $parameters['conditions'] .=  (empty($parameters['conditions']) ? '' : ' AND ') . 'language_id=' . $languageId;
-            }
+            $where[] = 'language_id=' . $languageId;
         }
+        $parameters['conditions'] = implode(' AND ', $where);
         $system = $this->getDI()->getConfig()->system;
         if($system->data_cache_on && !isset($parameters['cache'])) {
             $parameters['cache'] = $parameters['cache'] ?? [];

@@ -8,6 +8,12 @@ use Common\Common;
 
 class CategoryContent extends ModelsCategoryContent {
     
+    public function beforeCreate() {
+        $adminInfo = $this->getDI()->getSession()->get('adminInfo');
+        $this->admin_id = $adminInfo['id'];
+        $this->admin_nicename = $adminInfo['nicename'];
+    }
+    
     public function rules() {
         return [
             'id0' => ['id', 'callback', '非法操作', function($data) {
@@ -97,7 +103,7 @@ class CategoryContent extends ModelsCategoryContent {
             $limit = 'LIMIT ' . $limit;
         }
         $positionSql = $joinPosition ? 'LEFT JOIN App\Admin\Models\CategoryContentPosition AS d ON d.category_content_id=a.id' : '';
-        $phql = "SELECT a.id,a.category_id,a.title,a.urltitle,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name AS category_name,c.content AS content_c
+        $phql = "SELECT a.id,a.category_id,a.title,a.urltitle,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.jump_url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name AS category_name,c.content AS content_c
                  FROM App\Admin\Models\CategoryContent AS a
                  LEFT JOIN App\Admin\Models\Category AS b ON b.id=a.category_id
                  LEFT JOIN App\Admin\Models\CategoryModel AS c ON c.id=b.category_model_id
@@ -109,7 +115,7 @@ class CategoryContent extends ModelsCategoryContent {
     }
     
     public function add(array $data) {
-        $data = Common::arraySlice(['category_id', 'title', 'urltitle', 'subtitle', 'font_color', 'font_bold', 'keywords', 'description', 'updatetime', 'image', 'url', 'sequence', 'tpl', 'status', 'copyfrom', 'views', 'position', 'taglink'], $data);
+        $data = Common::arraySlice(['category_id', 'title', 'urltitle', 'subtitle', 'font_color', 'font_bold', 'keywords', 'description', 'updatetime', 'image', 'jump_url', 'sequence', 'tpl', 'status', 'copyfrom', 'views', 'position', 'taglink'], $data);
         if(empty($data['urltitle'])) {
             $pinyin = new Pinyin();
             $data['urltitle'] = $pinyin->permalink($data['title'], '');
@@ -160,6 +166,9 @@ class CategoryContent extends ModelsCategoryContent {
                 goto reurltitle;
             }
         }
+        if(empty($data['updatetime'])) {
+            $data['updatetime'] = date('Y-m-d H:i:s');
+        }
         $validate = new Validate();
         $message = $validate->addRules(self::getRules(['id0', 'title0']))->validate($updateData);
         if (count($message)) {
@@ -190,7 +199,7 @@ class CategoryContent extends ModelsCategoryContent {
     }
     
     public function edit(array $data) {
-        $data = Common::arraySlice(['id', 'category_id', 'title', 'urltitle', 'subtitle', 'font_color', 'font_bold', 'keywords', 'description', 'updatetime', 'image', 'url', 'sequence', 'tpl', 'status', 'copyfrom', 'views', 'position', 'taglink'], $data);
+        $data = Common::arraySlice(['id', 'category_id', 'title', 'urltitle', 'subtitle', 'font_color', 'font_bold', 'keywords', 'description', 'updatetime', 'image', 'jump_url', 'sequence', 'tpl', 'status', 'copyfrom', 'views', 'position', 'taglink'], $data);
         if(empty($data['urltitle'])) {
             $pinyin = new Pinyin();
             $data['urltitle'] = $pinyin->permalink($data['title'], '');

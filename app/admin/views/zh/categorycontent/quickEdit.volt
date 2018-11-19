@@ -39,7 +39,7 @@ html,body { overflow:hidden;}
       <tr>
         <td width="100" align="right">更新时间</td>
         <td>
-          <span style=" float:left"><input name="updatetime"  id="updatetime" type="text" class="text_value" style="width:250px;" value="{{ date('Y-m-d H:i:s') }}" reg="\S" msg="更新时间不能为空" /></span><div id="updatetime_button" class="time" style="float:left"></div>
+          <span style=" float:left"><input name="updatetime"  id="updatetime" type="text" class="text_value" style="width:250px;" value=""  /></span><div id="updatetime_button" class="time" style="float:left"></div>
           <script>$('#updatetime_button').calendar({ id:'#updatetime',format:'yyyy-MM-dd HH:mm:ss'});</script>
         </td>
         </tr>

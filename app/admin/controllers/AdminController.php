@@ -28,15 +28,16 @@ class AdminController extends CommonController {
             // 如果使用的生存时间不是配置文件的时间，建议在get、save、exists等方法中加上设置时间
             if (!$cache->exists($key, $lifetime)) {
                 $cache->save($key, 0, $lifetime);
-            } else if ($cache->get($key, $lifetime) == 10) {
+            } else if ($cache->get($key, $lifetime) >= 10) {
                 return $this->sendJson('您今日已输错十次密码，账户已被冻结，次日解封！', 10003);
             }
             $admin = new Admin();
             $checkLoginRes = $admin->checkLogin($requestData);
             if ($checkLoginRes === false) {
                 $cache->increment($key);
-                if ($cache->get($key, $lifetime) == 5) {
-                    return $this->sendJson('您今日已输错五次密码，每日只允许输错十次，十次后账户将被冻结，次日解封！', 10002);
+                $times = $cache->get($key, $lifetime);
+                if ($cache->get($key, $lifetime) >= 5) {
+                    return $this->sendJson('您今日已输错' . $times . '次密码，每日只允许输错10次，10次后账户将被冻结，次日解封！', 10002);
                 }
                 return $this->sendJson($admin->getMessages()[0]->getMessage(), 10001);
             }

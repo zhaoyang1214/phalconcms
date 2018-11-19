@@ -34,7 +34,7 @@ class CategoryController extends CommonController {
     public function indexAction() {
         $category = new Category();
         $count = $category->getAllowCount();
-        $paginator = new Paginator($count, 50);
+        $paginator = new Paginator($count, 500);
         $categoryList = $category->getAllowList();
         $categoryList = array_slice($categoryList, $paginator->getOffset(), $paginator->getLimit());
         $categoryModelList = CategoryModel::find()->toArray();

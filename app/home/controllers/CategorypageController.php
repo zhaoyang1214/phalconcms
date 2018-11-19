@@ -2,7 +2,6 @@
 namespace App\Home\Controllers;
 
 use App\Home\Models\Category;
-use Library\Tools\Paginator;
 use App\Home\Models\CategoryPage;
 use App\Home\Models\Replace;
 
@@ -30,7 +29,7 @@ class CategorypageController extends CommonController {
             return $this->forward('error/error404');
         }
         $contentArr = explode('[page]', htmlspecialchars_decode($categoryPage->content));
-        $paginator = new Paginator(count($contentArr), 1);
+        $paginator = $this->di->get('paginator', [count($contentArr), 1]);
         $content = array_slice($contentArr, $paginator->getOffset(), $paginator->getLimit());
         $content = (new Replace())->replaceContent(implode('', $content));
         $this->view->nav = $category->getParents($id);
@@ -39,7 +38,7 @@ class CategorypageController extends CommonController {
         $this->view->paginator = $paginator;
         $this->view->parentCategory = $category->getOne($category->pid);
         $this->view->common = $this->media($category->name, $category->keywords, $category->description);
-        $this->view->topCategory = $category->getAll('pid=0');
+        $this->view->topCategory = $category->getTopCategory($category->id);
         $renderView = empty($category->category_tpl) ? 'categorypage/index' : $category->category_tpl;
         $this->view->pick($renderView);
     }

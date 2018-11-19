@@ -104,28 +104,30 @@ class Category {
     }
     
     public function getParents($id, $depth=1) {
-        static $category = [];
+        $category = [];
         $nowCategory = $this->getCategoryById($id);
         if(empty($nowCategory)) {
             return $category;
         }
         $category[] = $nowCategory;
         if(is_null($this->maxDepth) || $this->maxDepth > $depth) {
-            $this->getParents($nowCategory[$this->field['pid']], $depth);
+            $parents = $this->getParents($nowCategory[$this->field['pid']], $depth);
+            $category = array_merge($category, $parents);
         }
         return $category;  
     }
     
     public function getSons($id, $depth=1) {
-        static $category = [];
+        $category = [];
         $childCategory = $this->getChildCategory($id);
         if(empty($childCategory)) {
             return $category;
         }
-        if(is_null($this->maxDepth) || $this->maxDepth > $depth) {
+        if(is_null($this->maxDepth) || $this->maxDepth >= $depth) {
             foreach ($childCategory as $k => $v) {
                 $category[] = $v;
-                $this->getSons($v[$this->field['id']], $depth + 1);
+                $sons = $this->getSons($v[$this->field['id']], $depth + 1);
+                $category = array_merge($category, $sons);
             }
         }
         return $category;

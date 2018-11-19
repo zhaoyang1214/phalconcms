@@ -10,6 +10,7 @@ use Phalcon\DiInterface;
 use Phalcon\Loader;
 use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Config\Adapter\Php as ConfigAdapterPhp;
+use Phalcon\Config;
 
 class Module implements ModuleDefinitionInterface {
 
@@ -50,4 +51,5 @@ class Module implements ModuleDefinitionInterface {
             return $config;
         });
     }
+    
 }

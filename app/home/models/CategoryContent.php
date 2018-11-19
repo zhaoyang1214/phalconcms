@@ -8,10 +8,7 @@ class CategoryContent extends ModelsCategoryContent {
     
     public function getCount(string $conditions = null) {
         $where = empty($conditions) ? '' : 'WHERE ' . $conditions;
-        $phql = "SELECT COUNT(*) AS num
-        FROM App\Home\Models\CategoryContent AS a
-        {$where}
-        LIMIT 1";
+        $phql = "SELECT COUNT(*) AS num FROM App\Home\Models\CategoryContent AS a {$where} LIMIT 1";
         $query = self::getModelsManager()->createQuery($phql);
         $system = $this->getDI()->getConfig()->system;
         if($system->data_cache_on) {
@@ -52,13 +49,8 @@ class CategoryContent extends ModelsCategoryContent {
         if(!empty($order)) {
             $order = 'ORDER BY a.' . $order;
         }
-        $sql = "SELECT a.*,b.name as category_name,b.subname as category_subname,b.category_model_id{$expandFields}
-        FROM {$categoryContentSource} AS a
-        LEFT JOIN {$categorySource} AS b ON a.category_id=b.id
-        {$leftJoinExpandData}
-        {$where}
-        {$order},a.id ASC
-        {$limit}";
+        $url = $this->getDI()->getUrl()->get('categorycontent');
+        $sql = "SELECT a.*,concat('$url/',a.urltitle) as url,b.name as category_name,b.subname as category_subname,b.category_model_id{$expandFields} FROM {$categoryContentSource} AS a LEFT JOIN {$categorySource} AS b ON a.category_id=b.id {$leftJoinExpandData} {$where} {$order},a.id ASC {$limit}";
         $connect = $this->getReadConnection();
         $list = new Resultset(null, $this, $connect->query($sql));
         if($dataCache) {
@@ -69,7 +61,12 @@ class CategoryContent extends ModelsCategoryContent {
     
     public function getOne($parameters = null) {
         $system = $this->getDI()->getConfig()->system;
-        return self::getInfo($parameters, (bool)$system->data_cache_on);
+        $info = self::getInfo($parameters, (bool)$system->data_cache_on);
+        if($info !== false) {
+            $url = $this->getDI()->getUrl()->get('categorycontent/' . $info->urltitle);
+            $info->url = $url;
+        }
+        return $info;
     }
     
     public function viewsIncrement(int $id, int $step = 1) {
@@ -102,6 +99,7 @@ class CategoryContent extends ModelsCategoryContent {
         }
         list($field, $order) = explode(' ', $category['content_order']);
         $operators = trim($order) == 'ASC' ? '<' : '>';
+        $nowOrder = str_replace(['ASC','DESC'], ['DESC', 'ASC'], $category['content_order']);
         $where = "WHERE a.category_id={$category['id']} AND a.status=1 AND (a.{$field}{$operators}'{$categoryContent[$field]}' OR a.{$field}='{$categoryContent[$field]}' AND a.id<{$categoryContent['id']})";
         $categoryContentSource = $this->getSource();
         $categorySource = (new Category())->getSource();
@@ -118,13 +116,8 @@ class CategoryContent extends ModelsCategoryContent {
                 $expandFields = ',c.' . $expandFields;
             }
         }
-        $sql = "SELECT a.*,b.name as category_name,b.subname as category_subname,b.category_model_id{$expandFields}
-        FROM {$categoryContentSource} AS a
-        LEFT JOIN {$categorySource} AS b ON a.category_id=b.id
-        {$leftJoinExpandData}
-        {$where}
-        ORDER BY a.{$category['content_order']},a.id ASC
-        LIMIT 1";
+        $url = $this->getDI()->getUrl()->get('categorycontent');
+        $sql = "SELECT a.*,concat('$url/',a.urltitle) as url,b.name as category_name,b.subname as category_subname,b.category_model_id{$expandFields} FROM {$categoryContentSource} AS a LEFT JOIN {$categorySource} AS b ON a.category_id=b.id {$leftJoinExpandData} {$where} ORDER BY a.{$nowOrder},a.id ASC LIMIT 1";
         $connect = $this->getReadConnection();
         $info = $connect->fetchOne($sql, $fetchMode);
         if($dataCache) {
@@ -174,13 +167,8 @@ class CategoryContent extends ModelsCategoryContent {
                 $expandFields = ',c.' . $expandFields;
             }
         }
-        $sql = "SELECT a.*,b.name as category_name,b.subname as category_subname,b.category_model_id{$expandFields}
-        FROM {$categoryContentSource} AS a
-        LEFT JOIN {$categorySource} AS b ON a.category_id=b.id
-        {$leftJoinExpandData}
-        {$where}
-        ORDER BY a.{$category['content_order']},a.id ASC
-        LIMIT 1";
+        $url = $this->getDI()->getUrl()->get('categorycontent');
+        $sql = "SELECT a.*,concat('$url/',a.urltitle) as url,b.name as category_name,b.subname as category_subname,b.category_model_id{$expandFields} FROM {$categoryContentSource} AS a LEFT JOIN {$categorySource} AS b ON a.category_id=b.id {$leftJoinExpandData} {$where} ORDER BY a.{$category['content_order']},a.id ASC LIMIT 1";
         $connect = $this->getReadConnection();
         $info = $connect->fetchOne($sql, $fetchMode);
         if($dataCache) {
@@ -208,8 +196,9 @@ class CategoryContent extends ModelsCategoryContent {
     }
     
     public function getListBySearch(string $where, int $limit, int $offset, int $type=0) {
+        $url = $this->getDI()->getUrl()->get('categorycontent');
         $query = self::getModelsManager()->createBuilder()
-        ->columns('a.id,a.category_id,a.title,a.urltitle,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name as category_name,b.subname as category_subname,b.category_model_id')
+        ->columns('a.id,a.category_id,a.title,a.urltitle,concat("' . $url . '/",a.urltitle) as url,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.jump_url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name as category_name,b.subname as category_subname,b.category_model_id')
         ->addFrom('App\Home\Models\CategoryContent', 'a')
         ->leftJoin('App\Home\Models\Category', 'a.category_id=b.id', 'b');
         if($type == 2) {
@@ -227,4 +216,162 @@ class CategoryContent extends ModelsCategoryContent {
         }
         return $query->execute();
     }
+    
+    public function getListByCategoryId(int $categoryId, int $limit = 10, int $offset = 0, string $order = null, string $conditions = '') {
+        $category = (new Category())->getOne($categoryId);
+        if($category === false) {
+            return false;
+        }
+        $conditions .= (empty($conditions) ? '' : ' AND ') . 'a.category_id=' . $categoryId . ' AND a.status=1';
+        return self::getContentList($conditions, $offset . ',' .$limit, $category->expand_id, $order ?? $category->content_order);
+    }
+    
+    public function getListByTagsIds($tagsIds, int $limit = 10, int $offset = 0, $categoryIds = null, bool $categorySon = false, string $order = null, string $conditions = '') {
+        if(is_array($tagsIds)) {
+            $tagsIds = implode(',', $tagsIds);
+        }
+        $whereArr = [
+            "c.tags_id in({$tagsIds})",
+            'a.status=1'
+        ];
+        if(!is_null($categoryIds)) {
+            if($categorySon) {
+                if(!is_array($categoryIds)) {
+                    $categoryIds = explode(',', $categoryIds);
+                }
+                $categoryIdArr = $categoryIds;
+                foreach ($categoryIds as $v) {
+                    $sons = (new Category())->getSons($v);
+                    if(!empty($sons)) {
+                        $sonsIds = array_column($sons, 'id');
+                        $categoryIdArr = array_merge($categoryIdArr, $sonsIds);
+                    }
+                }
+                $categoryIds = implode(',', $categoryIdArr);
+            }
+            $whereArr[] = "a.category_id in({$categoryIds})";
+        }
+        if(!empty($conditions)) {
+            $whereArr[] = $conditions;
+        }
+        $where = implode(' AND ', $whereArr);
+        $order = $order ?? 'a.updatetime DESC,a.views DESC';
+        $url = $this->getDI()->getUrl()->get('categorycontent');
+        $query = self::getModelsManager()->createBuilder()
+        ->columns('a.id,a.category_id,a.title,a.urltitle,concat("' . $url . '/",a.urltitle) as url,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.jump_url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name as category_name,b.subname as category_subname,b.category_model_id')
+        ->addFrom(__CLASS__, 'a')
+        ->leftJoin('App\Home\Models\Category', 'a.category_id=b.id', 'b')
+        ->leftJoin('App\Home\Models\TagsRelation', 'a.id=c.category_content_id', 'c')
+        ->where($where)
+        ->orderBy($order)
+        ->limit($limit, $offset)
+        ->getQuery();
+        $system = $this->getDI()->getConfig()->system;
+        if($system->data_cache_on) {
+            $query = $query->cache([
+                'key' => self::createCacheKey(__FUNCTION__, [$tagsIds, $limit, $offset, $categoryIds, $categorySon, $order, $conditions])
+            ]);
+        }
+        return $query->execute();
+    }
+    
+    public function getListByPositions($positionIds, int $limit = 10, int $offset = 0, $categoryIds = null, bool $categorySon = false, string $order = null, string $conditions = '') {
+        if(is_array($positionIds)) {
+            $positionIds = implode(',', $positionIds);
+        }
+        $whereArr = [
+            "c.position_id in({$positionIds})",
+            'a.status=1'
+            ];
+        if(!is_null($categoryIds)) {
+            if($categorySon) {
+                if(!is_array($categoryIds)) {
+                    $categoryIds = explode(',', $categoryIds);
+                }
+                $categoryIdArr = $categoryIds;
+                foreach ($categoryIds as $v) {
+                    $sons = (new Category())->getSons($v);
+                    if(!empty($sons)) {
+                        $sonsIds = array_column($sons, 'id');
+                        $categoryIdArr = array_merge($categoryIdArr, $sonsIds);
+                    }
+                }
+                $categoryIds = implode(',', $categoryIdArr);
+            }
+            $whereArr[] = "a.category_id in({$categoryIds})";
+        }
+        if(!empty($conditions)) {
+            $whereArr[] = $conditions;
+        }
+        $where = implode(' AND ', $whereArr);
+        $order = $order ?? 'a.updatetime DESC,a.views DESC';
+        $url = $this->getDI()->getUrl()->get('categorycontent');
+        $query = self::getModelsManager()->createBuilder()
+        ->columns('a.id,a.category_id,a.title,a.urltitle,concat("' . $url . '/",a.urltitle) as url,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.jump_url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name as category_name,b.subname as category_subname,b.category_model_id')
+        ->addFrom(__CLASS__, 'a')
+        ->leftJoin('App\Home\Models\Category', 'a.category_id=b.id', 'b')
+        ->leftJoin('App\Home\Models\CategoryContentPosition', 'a.id=c.category_content_id', 'c')
+        ->where($where)
+        ->orderBy($order)
+        ->limit($limit, $offset)
+        ->getQuery();
+        $system = $this->getDI()->getConfig()->system;
+        if($system->data_cache_on) {
+            $query = $query->cache([
+                'key' => self::createCacheKey(__FUNCTION__, [$positionIds, $limit, $offset, $categoryIds, $categorySon, $order, $conditions])
+            ]);
+        }
+        return $query->execute();
+    }
+    
+    public function getListByTagsGroupIds($tagsGroupIds, int $limit = 1000, int $offset = 0, $categoryIds = null, bool $categorySon = false, string $order = null, string $conditions = '') {
+        if(is_array($tagsGroupIds)) {
+            $tagsGroupIds = implode(',', $tagsGroupIds);
+        }
+        $whereArr = [
+            "d.tags_group_id in({$tagsGroupIds})",
+            'a.status=1'
+            ];
+        if(!is_null($categoryIds)) {
+            if($categorySon) {
+                if(!is_array($categoryIds)) {
+                    $categoryIds = explode(',', $categoryIds);
+                }
+                $categoryIdArr = $categoryIds;
+                foreach ($categoryIds as $v) {
+                    $sons = (new Category())->getSons($v);
+                    if(!empty($sons)) {
+                        $sonsIds = array_column($sons, 'id');
+                        $categoryIdArr = array_merge($categoryIdArr, $sonsIds);
+                    }
+                }
+                $categoryIds = implode(',', $categoryIdArr);
+            }
+            $whereArr[] = "a.category_id in({$categoryIds})";
+        }
+        if(!empty($conditions)) {
+            $whereArr[] = $conditions;
+        }
+        $where = implode(' AND ', $whereArr);
+        $order = $order ?? 'a.updatetime DESC,a.views DESC';
+        $url = $this->getDI()->getUrl()->get('categorycontent');
+        $query = self::getModelsManager()->createBuilder()
+        ->columns('a.id,a.category_id,a.title,a.urltitle,concat("' . $url . '/",a.urltitle) as url,a.subtitle,a.font_color,a.font_bold,a.keywords,a.description,a.updatetime,a.inputtime,a.image,a.jump_url,a.sequence,a.tpl,a.status,a.copyfrom,a.views,a.position,a.taglink,b.name as category_name,b.subname as category_subname,b.category_model_id')
+        ->addFrom(__CLASS__, 'a')
+        ->leftJoin('App\Home\Models\Category', 'a.category_id=b.id', 'b')
+        ->leftJoin('App\Home\Models\TagsRelation', 'a.id=c.category_content_id', 'c')
+        ->leftJoin('App\Home\Models\Tags', 'c.tags_id=d.id', 'd')
+        ->where($where)
+        ->orderBy($order)
+        ->limit($limit, $offset)
+        ->getQuery();
+        $system = $this->getDI()->getConfig()->system;
+        if($system->data_cache_on) {
+            $query = $query->cache([
+                'key' => self::createCacheKey(__FUNCTION__, [$tagsGroupIds, $limit, $offset, $categoryIds, $categorySon, $order, $conditions])
+            ]);
+        }
+        return $query->execute();
+    }
+    
 }

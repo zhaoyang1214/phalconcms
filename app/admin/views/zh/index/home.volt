@@ -59,7 +59,7 @@
     </table>
   </div>
 
-  <h3>程序信息</h3>
+ <!--  <h3>程序信息</h3>
   <div class="page_table  table_list">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tr>
@@ -73,7 +73,7 @@
       <tr>
         <td width="120">开发者: </td>
         <td width="250">赵阳</td>
-      </tr>
+      </tr> -->
 
 
     </table>

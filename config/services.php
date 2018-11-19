@@ -41,6 +41,7 @@ use Phalcon\Session\Factory as SessionFactory;
 use Phalcon\Text;
 use Library\Extensions\UrlExtension;
 use Phalcon\Mvc\Url;
+use Library\Tools\Paginator;
 
 $di = new FactoryDefault();
 
@@ -554,6 +555,15 @@ $di->setShared('htmlPurifier', function() {
         'allowfullscreen' => 'CDATA'
     ]);
     return new \HTMLPurifier($htmlPurifierConfig);
+});
+
+$di->setShared('paginator', function (int $totalRows = null, int $listRows = null, string $url = null, array $config = []) {
+    $paginatorConfig = $this->getConfig()->services->paginator;
+    if(!is_null($listRows)) {
+        $paginatorConfig->list_rows = $listRows;
+    }
+    $config = Common::convertArrKeyUnderline($paginatorConfig->merge(new Config($config))->toArray());
+    return new Paginator($totalRows, $config['listRows'], $url, $config);
 });
 
 return $di;

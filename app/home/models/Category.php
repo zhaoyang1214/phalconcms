@@ -2,6 +2,7 @@
 namespace App\Home\Models;
 
 use Models\Category as ModelsCategory;
+use Phalcon\Mvc\Model\Exception;
 
 class Category extends ModelsCategory {
     
@@ -12,24 +13,37 @@ class Category extends ModelsCategory {
      * @author ZhaoYang
      * @date 2018年9月30日 上午10:41:48
      */
-    public function getOne($parameters = null, $languageId = null) {
+    public function getOne($parameters = null, bool $toArray = false, $languageId = null) {
+        $where = [];
+        if(is_numeric($parameters)) {
+            $where[] = 'id=' . $parameters;
+            $parameters = [];
+        } else if(is_string($parameters)) {
+            $where[] = $parameters;
+            $parameters = [];
+        } else if(is_array($parameters)) {
+            $where[] = $parameters['conditions'] ?? '';
+        } else {
+            $parameters = [];
+        }
+        $where[] = 'is_show=1';
         if($languageId !== false) {
             $languageId = ($languageId && is_int($languageId)) ? $languageId : LANGUAGE_ID;
-            if(is_numeric($parameters)) {
-                $parameters = [
-                    'conditions' => 'id=' . $parameters . ' AND is_show=1 AND language_id=' . $languageId
-                ];
-            } else if(is_string($parameters)) {
-                $parameters = [
-                    'conditions' => $parameters . ' AND is_show=1 AND language_id=' . $languageId
-                ];
-            } else if(is_array($parameters)) {
-                $parameters['conditions'] = $parameters['conditions'] ?? '';
-                $parameters['conditions'] .=  (empty($parameters['conditions']) ? '' : ' AND ') . ' is_show=1 AND language_id=' . $languageId;
+            $where[] = 'language_id=' . $languageId;
+        }
+        $parameters['conditions'] = implode(' AND ', $where);
+        $system = $this->getDI()->getConfig()->system;
+        $info = self::getInfo($parameters, (bool)$system->data_cache_on);
+        if($info !== false) {
+            $url = $this->getDI()->getUrl()->get('category/' . $info->urlname);
+            if($toArray) {
+                $info = $info->toArray();
+                $info['url'] = $url;
+            } else {
+                $info->url = $url;
             }
         }
-        $system = $this->getDI()->getConfig()->system;
-        return self::getInfo($parameters, (bool)$system->data_cache_on);
+        return $info;
     }
     
     /**
@@ -39,24 +53,39 @@ class Category extends ModelsCategory {
      * @author ZhaoYang
      * @date 2018年9月30日 上午10:41:48
      */
-    public function getAll($parameters = [ ], $languageId = null) {
+    public function getAll($parameters = [ ], bool $toArray = false, $languageId = null) {
+        $where = [];
+        if(is_numeric($parameters)) {
+            $where[] = 'id=' . $parameters;
+            $parameters = [];
+        } else if(is_string($parameters)) {
+            $where[] = $parameters;
+            $parameters = [];
+        } else if(is_array($parameters)) {
+            $where[] = $parameters['conditions'] ?? '';
+        } else {
+            $parameters = [];
+        }
+        $where[] = 'is_show=1';
         if($languageId !== false) {
             $languageId = ($languageId && is_int($languageId)) ? $languageId : LANGUAGE_ID;
-            if(is_numeric($parameters)) {
-                $parameters = [
-                    'conditions' => 'id=' . $parameters . ' AND is_show=1 AND language_id=' . $languageId
-                ];
-            } else if(is_string($parameters)) {
-                $parameters = [
-                    'conditions' => $parameters . ' AND is_show=1 AND language_id=' . $languageId
-                ];
-            } else if(is_array($parameters)) {
-                $parameters['conditions'] = $parameters['conditions'] ?? '';
-                $parameters['conditions'] .=  (empty($parameters['conditions']) ? '' : ' AND ') . ' is_show=1 AND language_id=' . $languageId;
+            $where[] = 'language_id=' . $languageId;
+        }
+        $parameters['conditions'] = implode(' AND ', $where);
+        if(!isset($parameters['order'])) {
+            $parameters['order'] = '';
+        }
+        $parameters['order'] = 'sequence ASC' . (empty($parameters['order']) ? '' : ',' . $parameters['order']);
+        $system = $this->getDI()->getConfig()->system;
+        $list = self::getList($parameters, (bool)$system->data_cache_on);
+        if($toArray) {
+            $url = $this->getDI()->getUrl();
+            $list = $list->toArray();
+            foreach ($list as &$v) {
+                $v['url'] = $url->get('category/' . $v['urlname']);
             }
         }
-        $system = $this->getDI()->getConfig()->system;
-        return self::getList($parameters, (bool)$system->data_cache_on);
+        return $list;
     }
     
     /**
@@ -96,10 +125,10 @@ class Category extends ModelsCategory {
      * @date: 2018年10月2日 上午12:43:52
      */
     public function categoryGroup(int $id=0, int $maxDepth=null) {
-        $category = $this->getAll()->toArray();
-        $toolsCategory = new \Library\Tools\Category($category);
-        $category = $toolsCategory->setMaxDepth($maxDepth)->categoryGroup($id);
-        return $category;
+        $list = self::getAll(null, true);
+        $toolsCategory = new \Library\Tools\Category($list);
+        $list = $toolsCategory->setMaxDepth($maxDepth)->categoryGroup($id);
+        return $list;
     }
     
     /**
@@ -108,16 +137,26 @@ class Category extends ModelsCategory {
      * @date: 2018年10月2日 上午12:43:36
      */
     public function getParents(int $id=0, int $maxDepth = null) {
-        $category = $this->getAll()->toArray();
-        $toolsCategory = new \Library\Tools\Category($category);
+        $list = self::getAll(null, true);
+        $toolsCategory = new \Library\Tools\Category($list);
         $parents = $toolsCategory->setMaxDepth($maxDepth)->getParents($id);
         return array_reverse($parents);
     }
     
     public function getSons(int $id=0, int $maxDepth = null) {
-        $category = $this->getAll()->toArray();
-        $toolsCategory = new \Library\Tools\Category($category);
+        $list = self::getAll(null, true);
+        $toolsCategory = new \Library\Tools\Category($list);
         $sons = $toolsCategory->setMaxDepth($maxDepth)->getSons($id);
         return $sons;
+    }
+    
+    public function getTopCategory(int $id) {
+        $list = self::getParents($id);
+        return $list[0];
+    }
+    
+    public function getParent(int $id) {
+        $list = self::getParents($id);
+        return end($list);
     }
 }

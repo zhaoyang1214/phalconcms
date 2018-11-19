@@ -137,14 +137,14 @@
       <tr>
         <td align="right">跳转到</td>
         <td>
-        <input name="url" type="text" class="text_value" id="url" value="{% if categoryContent.url is defined %}{{ categoryContent.url }}{% endif %}" />
+        <input name="jump_url" type="text" class="text_value" id="jump_url" value="{% if categoryContent.jump_url is defined %}{{ categoryContent.jump_url }}{% endif %}" />
         </td>
-        <td>URL链接，支持标签</td>
+        <td>URL链接</td>
       </tr>
       <tr>
         <td align="right">更新时间</td>
         <td>
-        <input name="updatetime"  id="updatetime" type="text" class="text_value" style="width:260px; float:left" value="{% if categoryContent.updatetime is defined %}{{ categoryContent.updatetime }}{% else %}{{ date('Y-m-d H:i:s') }}{% endif %}" reg="\S" msg="更新时间不能为空" /><div id="updatetime_button" class="time"></div>
+        <input name="updatetime"  id="updatetime" type="text" class="text_value" style="width:260px; float:left" value="" /><div id="updatetime_button" class="time"></div>
         <script>$('#updatetime_button').calendar({ id:'#updatetime',format:'yyyy-MM-dd HH:mm:ss'});</script>
         </td>
         <td></td>
@@ -226,8 +226,9 @@ function get_one_pic(){
 
 //内容来源列表
 function befrom_list(id){
+	
+    <?php $befromlist = empty($categoryModel->befrom) ? [] : explode("\n", $categoryModel->befrom);?>
 	var list = [ 
-	{% set befromlist = categoryModel.befrom is not empty ? explode("\n", categoryModel.befrom) : [] %}
 	{% for value in befromlist %}
 	{
 		href: "javascript:;\" onclick=\"befrom_val('"+id+"','{{ value }}');\"",

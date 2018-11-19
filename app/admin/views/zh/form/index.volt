@@ -15,8 +15,9 @@
       <tr>
         <th width="10%"><center>序号</center></th>
         <th width="30%">表单编号</th>
-        <th width="20%">表单</th>
-        <th width="20%"><center>表单名</center></th>
+        <th width="15%">表单</th>
+        <th width="15%"><center>表单名</center></th>
+        <th width="10%"><center>表单顺序</center></th>
         <th width="20%"><center>表单操作</center></th>
       </tr>
       {% for form in formList %}
@@ -25,6 +26,7 @@
         <td>{{ form.no }}</td>
         <td>{{ form.name }}</td>
         <td><center>{{ form.table }}</center></td>
+        <td><center>{{ form.sequence }}</center></td>
         <td><center>
         {% if formfieldIndexPower %}
         <a href="{{ url('formfield/index/form_id/')~form.id }}">字段管理</a>

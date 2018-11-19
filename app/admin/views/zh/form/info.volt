@@ -29,6 +29,13 @@
         <td>数据表名</td>
       </tr>
       <tr>
+        <td width="100" align="right">表单顺序</td>
+        <td>
+        <input name="sequence" type="text" class="text_value" id="sequence" value="{% if form.sequence is defined %}{{ form.sequence }}{% else %}0{% endif %}"/>
+        </td>
+        <td>数字越小越靠前</td>
+      </tr>
+      <tr>
         <td width="100" align="right">内容排序</td>
         <td>
         <input name="sort" type="text" class="text_value" id="sort" value="{% if form.sort is defined %}{{ form.sort }}{% else %}id DESC{% endif %}" reg="\S" />

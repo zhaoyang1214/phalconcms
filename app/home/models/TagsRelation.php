@@ -50,4 +50,5 @@ class TagsRelation extends ModelsTagsRelation {
         }
         return $query->execute();
     }
+    
 }

@@ -78,6 +78,7 @@ class Form extends ModelsForm {
             'alone_tpl0' => ['alone_tpl', 'inclusionin', '独立模板选择错误', [0,1]],
             'return_type0' => ['return_type', 'inclusionin', '前台提交返回类型选择错误', [0,1]],
             'is_captcha0' => ['is_captcha', 'inclusionin', '使用图片验证码选择错误', [0,1]],
+            'sequence0' => ['sequence', 'numericality', '表单顺序只能为数字'],
         ];
     }
     
@@ -138,6 +139,7 @@ class Form extends ModelsForm {
         if(!is_null($offset)) {
             $parameters['offset'] = $offset;
         }
+        $parameters['order'] = 'sequence ASC';
         return self::find($parameters);
     }
     
@@ -149,8 +151,8 @@ class Form extends ModelsForm {
      * @date: 2018年8月6日 下午9:02:49
      */
     public function add(array $data) {
-        $data = Common::arraySlice(['name', 'table', 'sort', 'display', 'page', 'alone_tpl', 'tpl', 'where', 'return_type', 'return_msg', 'return_url', 'is_captcha'], $data);
-        $message = (new Validate())->addRules(self::getRules(['name0', 'name1', 'table0', 'table1', 'sort0', 'display0', 'page0', 'alone_tpl0','return_type0','is_captcha0']))->validate($data);
+        $data = Common::arraySlice(['name', 'table', 'sequence', 'sort', 'display', 'page', 'alone_tpl', 'tpl', 'where', 'return_type', 'return_msg', 'return_url', 'is_captcha'], $data);
+        $message = (new Validate())->addRules(self::getRules(['name0', 'name1', 'table0', 'table1', 'sequence0', 'sort0', 'display0', 'page0', 'alone_tpl0','return_type0','is_captcha0']))->validate($data);
         if (count($message)) {
             return $this->errorMessage($message);
         }
@@ -205,8 +207,8 @@ class Form extends ModelsForm {
       * @date: 2018年8月8日 上午12:32:37
       */
     public function edit(array $data) {
-        $data = Common::arraySlice(['id', 'sort', 'display', 'page', 'alone_tpl', 'tpl', 'where', 'return_type', 'return_msg', 'return_url', 'is_captcha'], $data);
-        $message = (new Validate())->addRules(self::getRules(['id0', 'sort0', 'display0', 'page0', 'alone_tpl0','return_type0','is_captcha0']))->validate($data);
+        $data = Common::arraySlice(['id', 'sequence', 'sort', 'display', 'page', 'alone_tpl', 'tpl', 'where', 'return_type', 'return_msg', 'return_url', 'is_captcha'], $data);
+        $message = (new Validate())->addRules(self::getRules(['id0', 'sequence0', 'sort0', 'display0', 'page0', 'alone_tpl0','return_type0','is_captcha0']))->validate($data);
         if (count($message)) {
             return $this->errorMessage($message);
         }

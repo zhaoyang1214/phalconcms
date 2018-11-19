@@ -68,7 +68,7 @@ return [
                 'port' => 3306,
                 'username' => 'root',
                 'password' => '123456',
-                'dbname' => 'phalconcms',
+                'dbname' => 'bbx_web',
                 'charset' => 'utf8'
             ]
         ],

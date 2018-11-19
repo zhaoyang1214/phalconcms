@@ -1,7 +1,6 @@
 <?php
 namespace App\Home\Controllers;
 
-use Library\Tools\Paginator;
 use App\Home\Models\Category;
 use App\Home\Models\CategoryContent;
 
@@ -55,7 +54,7 @@ class SearchController extends CommonController {
         $categoryContent = new CategoryContent();
         $count = $categoryContent->getCountBySearch($where, $type);
         $listRows = intval($this->config->system->tpl_seach_page) <= 0 ? 10 : $this->config->system->tpl_seach_page;
-        $paginator = new Paginator($count, $listRows);
+        $paginator = $this->di->get('paginator', [$count, $listRows]);
         $list = $categoryContent->getListBySearch($where, $paginator->getLimit(), $paginator->getOffset(), $type);
         $this->view->list = $list;
         $this->view->paginator = $paginator;

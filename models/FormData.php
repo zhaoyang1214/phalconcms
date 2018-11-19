@@ -165,11 +165,14 @@ class FormData extends BaseModel {
      * @date: 2018年8月27日 上午12:18:14
      */
     public function edit(array $data) {
+        if(!isset($data['id'])) {
+            return $this->errorMessage('id不存在！');
+        }
         $data = $this->checkData($data, abs($data['form_id']));
         if($data === false) {
             return false;
         }
-        $formData = self::findFirst($data['id']);
+        $formData = self::findFirst(intval($data['id']));
         $this->assign($formData->toArray());
         try {
             return $this->update($data);

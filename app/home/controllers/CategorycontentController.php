@@ -8,7 +8,7 @@ use App\Home\Models\ExpandData;
 use App\Home\Models\Expand;
 use App\Home\Models\Replace;
 use App\Home\Models\Tags;
-use Library\Tools\Paginator;
+use App\Home\Models\ExpandField;
 
 class CategorycontentController extends CommonController {
     
@@ -45,18 +45,21 @@ class CategorycontentController extends CommonController {
                 return;
             }
         }
-        if(!empty($categoryContent->url)) {
-            return $this->response->redirect($categoryContent->url, substr($categoryContent->url, 0, 4) == 'http' ? true : false);
+        if(!empty($categoryContent->jump_url)) {
+            return $this->response->redirect($categoryContent->jump_url, substr($categoryContent->jump_url, 0, 4) == 'http' ? true : false);
         }
         $category = (new Category())->getOne($categoryContent->category_id);
         if($category->expand_id) {
             $expand = (new Expand())->getOne($category->expand_id);
             $expandData = (new ExpandData($expand->table))->getOne('category_content_id=' . $categoryContent->id);
+            $expandField = new ExpandField();
+            $this->view->expandField = $expandField;
+            $this->view->expandFieldList = $expandField->getAll('expand_id=' . $category->expand_id);
             $this->view->expandData = $expandData;
         }
         $categoryContentData = (new CategoryContentData())->getOne('category_content_id=' . $categoryContent->id);
         $contentArr = explode('[page]', htmlspecialchars_decode($categoryContentData->content));
-        $paginator = new Paginator(count($contentArr), 1);
+        $paginator = $this->di->get('paginator', [count($contentArr), 1]);
         $content = array_slice($contentArr, $paginator->getOffset(), $paginator->getLimit());
         $content = implode('', $content);
         if(!empty($content)) {
@@ -73,8 +76,8 @@ class CategorycontentController extends CommonController {
         $this->view->nextCategoryContent = $categoryContent->getNextContent($categoryContent, $category);
         $this->view->nav = $category->getParents($category->id);
         $this->view->parentCategory = $category->getOne($category->pid);
-        $this->view->topCategory = $category->getAll('pid=0');
-        $this->view->common = $this->media($categoryContent->title . '-' . $category->name, $categoryContent->keywords, $categoryContent->description);
+        $this->view->topCategory = $category->getTopCategory($category->id);
+        $this->view->common = $this->media($categoryContent->title . ' - ' . $category->name, $categoryContent->keywords, $categoryContent->description);
         $renderView = empty($category->content_tpl) ? 'categorycontent/index' : $category->content_tpl;
         $this->view->pick($renderView);
     }

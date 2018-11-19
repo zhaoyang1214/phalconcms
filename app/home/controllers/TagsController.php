@@ -2,7 +2,6 @@
 namespace App\Home\Controllers;
 
 use App\Home\Models\Tags;
-use Library\Tools\Paginator;
 use App\Home\Models\TagsRelation;
 
 class TagsController extends CommonController {
@@ -27,7 +26,7 @@ class TagsController extends CommonController {
         $tags = new Tags();
         $count = $tags->getCount();
         $listRows = intval($this->config->system->tpl_tags_index_page) <= 0 ? 10 : $this->config->system->tpl_tags_index_page;
-        $paginator = new Paginator($count, $listRows);
+        $paginator = $this->di->get('paginator', [$count, $listRows]);
         $list = $tags->getAll([
             'limit' => $paginator->getLimit(),
             'offset' => $paginator->getOffset()
@@ -73,7 +72,7 @@ class TagsController extends CommonController {
         $tagsRelation = new TagsRelation();
         $count = $tagsRelation->getCountByTagsId($tags->id);
         $listRows = intval($this->config->system->tpl_tags_page) <= 0 ? 10 : $this->config->system->tpl_tags_page;
-        $paginator = new Paginator($count, $listRows);
+        $paginator = $this->di->get('paginator', [$count, $listRows]);
         $list = $tagsRelation->getAllByTagsId($tags->id, $paginator->getLimit(), $paginator->getOffset());
         $this->view->list = $list;
         $this->view->paginator = $paginator;

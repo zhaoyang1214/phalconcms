@@ -81,9 +81,44 @@ return [
         ],
         // url配置
         'url' => [
-            'base_uri' => '/' . MODULE_NAME . '/',
+            'base_uri' => '/',
             'static_base_uri' => '/' . MODULE_NAME . '/static/zh/',
             'base_path' => ''
+        ],
+        // 分页
+        'paginator' => [
+            // 页码变量名
+            'page' => 'page',
+            // 页码正则匹配
+            'page_pattern' => '/([\/&?]page[\/=])([\d]+)/',
+            // 禁用页的class值
+            'disabled' => 'disabled',
+            // 选中页class值
+            'active' => 'active',
+            // 第一页模板
+            'first_theme' => '<a {href}><li class="{class}">首页</li></a>',
+            // 上一页模板
+            'prev_theme' => '<a {href}><li class="{class}"><</li></a>',
+            // 当前页模板
+            'now_theme' => '<a><li class="{class}">{nowPage}</li></a>',
+            // 其它页模板
+            'other_theme' => '<a {href}><li class="{class}">{otherPage}</li></a>',
+            // 下一页模板
+            'next_theme' => '<a {href}><li class="{class}">></li></a>',
+            // 最后一页模板
+            'last_theme' => '<a {href}><li class="{class}">尾页</li></a>',
+            // 后缀模板
+            'suffix_theme' => '<li class="totalPage">共<span>{totalPages}</span>页 </li>',
+            // 当前页左边显示$otherTheme的个数
+            'left_side_amount' => 3,
+            // $leftSideAmount
+            'right_side_amount' => 3,
+            // 每页显示的行数
+            'list_rows' => 10,
+            // 展示的模板
+            'show_theme' => '{getFirstLinkPage}{getPrevLinkPage}{getLeftLinkPage}{getNowLinkPage}{getRightLinkPage}{getNextLinkPage}{getLastLinkPage}{getSuffixPage}',
+            // 是否显示无效按钮（首页、上一页、下一页、尾页）
+            'is_show_disabled' => false,
         ]
     ]
 ];

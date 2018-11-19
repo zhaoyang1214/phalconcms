@@ -1,7 +1,6 @@
 <?php
 namespace App\Home\Controllers;
 
-use Library\Tools\Paginator;
 use App\Home\Models\Form;
 use App\Home\Models\FormField;
 use App\Home\Models\FormData;
@@ -40,7 +39,7 @@ class FormController extends CommonController {
         $where = htmlspecialchars_decode($form->where);
         $count = $formData->getCount($where);
         $listRows = intval($form->page) <= 0 ? 10 : $form->page;
-        $paginator = new Paginator($count, $listRows);
+        $paginator = $this->di->get('paginator', [$count, $listRows]);
         $list = $formData->getAll([
             'conditions' => $where,
             'order' => $form->sort,
@@ -100,6 +99,7 @@ class FormController extends CommonController {
     }
     
     public function editAction() {
+        exit;
         $no = $this->post('no');
         if(empty($no)) {
             return $this->forward('error/error404');

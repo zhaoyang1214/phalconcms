@@ -19,7 +19,7 @@ html { _height: auto; _padding: 50px 0 0px; }
 <body>
 <!--头部-->
 <div id="head">
-  <div id="logo"><img src="{{ static_url('images/logo.png') }}" width="180" height="50" /></div>
+  <div id="logo"><img src="{{ static_url('images/logo.png') }}" height="50" /></div>
   <div class="top_nav">
     <ul>
     	{% for v in menuList %}

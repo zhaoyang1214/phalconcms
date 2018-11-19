@@ -8,7 +8,7 @@ return [
     // 应用配置
     'application' => [
         'debug' => [
-            'state' => true,
+            'state' => false,
             'path' => ''
         ],
         'loader' => [
@@ -81,7 +81,6 @@ return [
         ],
         // url配置
         'url' => [
-//             'base_uri' => '/' . MODULE_NAME . '/',
             'base_uri' => '/',
             'static_base_uri' => '/' . MODULE_NAME . '/static/zh/',
             'base_path' => ''
@@ -121,6 +120,5 @@ return [
             // 是否显示无效按钮（首页、上一页、下一页、尾页）
             'is_show_disabled' => false,
         ]
-        
     ]
 ];

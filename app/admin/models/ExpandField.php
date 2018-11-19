@@ -41,7 +41,7 @@ class ExpandField extends ModelsExpandField {
             }],
             'name0' => ['name', 'stringlength', '字段描述长度必须大于1位|字段描述必须小于50位', [1, 50]],
             'name1' => ['name', 'callback', '字段描述已存在', function($data) {
-            $filedArr = ['id', 'category_content_id', 'category_id', 'title', 'urltitle', 'subtitle', 'font_color', 'font_bold', 'keywords', 'description', 'updatetime', 'inputtime', 'image', 'url', 'sequence', 'tpl', 'status', 'copyfrom', 'views', 'position', 'taglink'];
+            $filedArr = ['id', 'category_content_id', 'category_id', 'title', 'urltitle', 'subtitle', 'font_color', 'font_bold', 'keywords', 'description', 'updatetime', 'inputtime', 'image', 'jump_url', 'sequence', 'tpl', 'status', 'copyfrom', 'views', 'position', 'taglink', 'url'];
                 if(!isset($data['name']) || !isset($data['expand_id']) || in_array($data['name'], $filedArr)) {
                     return false;
                 }
