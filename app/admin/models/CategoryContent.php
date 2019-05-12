@@ -88,7 +88,7 @@ class CategoryContent extends ModelsCategoryContent
         $session = $this->getDI()->getSession();
         $adminGroupInfo = $session->get('adminGroupInfo');
         $where = [];
-        if (! ($adminGroupInfo['keep'] & 1)) {
+        if (! ($adminGroupInfo['keep'] & 2)) {
             if (empty($adminGroupInfo['category_ids'])) {
                 return 0;
             }

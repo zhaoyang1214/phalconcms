@@ -11,7 +11,7 @@ class Category extends ModelsCategory
 
     /**
      * 规则
-     * 
+     *
      * @author ZhaoYang
      *         @date 2018年9月11日 上午10:04:38
      */
@@ -160,7 +160,7 @@ class Category extends ModelsCategory
         $session = $this->getDI()->getSession();
         $adminGroupInfo = $session->get('adminGroupInfo');
         $where = [];
-        if (! ($adminGroupInfo['keep'] & 1)) {
+        if (! ($adminGroupInfo['keep'] & 2)) {
             if (empty($adminGroupInfo['category_ids'])) {
                 return 0;
             }
@@ -178,7 +178,7 @@ class Category extends ModelsCategory
 
     /**
      * 获取可访问的所有栏目
-     * 
+     *
      * @return array
      * @author : ZhaoYang
      *         @date: 2018年7月29日 上午3:03:37
@@ -218,7 +218,7 @@ class Category extends ModelsCategory
 
     /**
      * 与category_model表联表查询
-     * 
+     *
      * @return array
      * @author : ZhaoYang
      *         @date: 2018年9月18日 下午11:37:07
@@ -268,7 +268,7 @@ class Category extends ModelsCategory
 
     /**
      * 批量插入
-     * 
+     *
      * @author : ZhaoYang
      *         @date: 2018年9月15日 下午4:43:11
      */
@@ -358,7 +358,7 @@ class Category extends ModelsCategory
 
     /**
      * 单个插入
-     * 
+     *
      * @author : ZhaoYang
      *         @date: 2018年9月15日 下午4:43:23
      */
