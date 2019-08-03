@@ -71,8 +71,12 @@ class DIspatcherPlugin extends Plugin {
         $params = $dispatcher->getParams();
         $newParams = [ ];
         foreach ($params as $k => $v) {
-            if ($k & 1) {
-                $newParams[$params[$k - 1]] = $v;
+            if (is_int($k)) {
+                if ($k & 1) {
+                    $newParams[$params[$k - 1]] = $v;
+                }
+            } else {
+                $newParams[$k] = $v;
             }
         }
         $dispatcher->setParams($newParams);

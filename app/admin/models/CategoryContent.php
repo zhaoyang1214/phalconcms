@@ -319,7 +319,7 @@ class CategoryContent extends ModelsCategoryContent
         if (! (new Admin())->checkPower('categorycontent', 'audit')) {
             unset($data['status']);
         }
-        $data['position'] = implode(',', $data['position']);
+        $data['position'] = isset($data['position']) ? implode(',', $data['position']) : '';
         $validate = new Validate();
         $message = $validate->addRules(self::getRules([
             'id0',

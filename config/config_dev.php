@@ -64,11 +64,11 @@ return [
             ],
             'prefix' => 'ph_',
             'mysql' => [ 
-                'host' => 'localhost',
+                'host' => '127.0.0.1',
                 'port' => 3306,
                 'username' => 'root',
                 'password' => '123456',
-                'dbname' => 'bbx_web',
+                'dbname' => 'phalconcms',
                 'charset' => 'utf8'
             ]
         ],
